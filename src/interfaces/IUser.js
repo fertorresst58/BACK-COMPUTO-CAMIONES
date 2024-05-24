@@ -1,6 +1,6 @@
 class IUser {
-  static async createUser (nombre, apellido, telefono, cumple, email, password, factura) {}
-  static async findByEmail (email) {}
+  static async createUser (nombre, apellidos, telefono, cumple, email, password, img) {}
+  static async findUser (email) {}
   async verifyPassword (password) {}
 }
 

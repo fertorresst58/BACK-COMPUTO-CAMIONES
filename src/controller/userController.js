@@ -5,52 +5,61 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body
     
-    const userDoc = await User.findByEmail(email)
+    const userDoc = await User.findUser(email)
     if (!userDoc) {
-      return res.status(404).json({
-        message: 'User not found'
+      return res.status(401).json({
+        message: 'CREDENCIALES INVALIDAS',
+        success: false
       })
     }
 
     const isValidPass = await userDoc.verifyPassword(password)
     if(!isValidPass) {
       return res.status(401).json({
-        message: 'Invalid Credentials'
+        message: 'CREDENCIALES INVALIDAS',
+        success: false
       })
     }
 
     const token = jwt.sign({ email: userDoc.email }, process.env.SECRET, { expiresIn: '1h' })
     res.status(200).json({ 
-      message: 'success',
-      token
+      message: 'LOGIN EXITOSO',
+      success: true,
+      token,
+      user: userDoc
     })
   } catch (error) {
     res.status(500).json({
-      message: 'Internal Server Error'
+      message: 'ERROR EN EL SERVIDOR',
+      success: false
     })
   }
 }
 
 const registerUser = async (req, res) => {
   try {
-    const { nombre, apellido, telefono, cumple, email, password, factura } = req.body
-    const existingUser = await User.findByEmail(email)
+    const { id, nombre, apellidos, telefono, cumple, email, password, img } = req.body
+    const existingUser = await User.findUser(email)
     if (existingUser) {
-      return res.status(400).json({
-        message: 'User already exists'
+      return res.status(409).json({
+        message: 'ERROR: EL CORREO YA ESTA REGISTRADO',
+        success: false
       })
     }
 
-    const newUser = await User.createUser(nombre, apellido, telefono, cumple, email, password, factura)
+    const newUser = await User.createUser(id, nombre, apellidos, telefono, cumple, email, password, img)
     res.status(201).json({
-      message: 'User registered successfully',
+      message: 'USUARIO REGISTRADO SATISFACTORIAMENTE',
+      success: true,
       user: newUser
     })
   } catch (error) {
     res.status(500).json({
-      message: 'Internal Server Error'
+      message: 'ERROR EN EL SERVIDOR',
+      success: false,
+      error
     })
   }
 }
 
-module.exports = { registerUser, loginUser, getAllUsers, deleteUser, updateUser }
+module.exports = { registerUser, loginUser }
