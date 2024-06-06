@@ -42,10 +42,9 @@ class Routes extends IRoutes {
     }
   }
 
-  static async updateSeats(routeId, selectedSeats, userId, availableSeats, bookedSeats) {
-    const routeRef = firestore.collection('routes').doc('routeId'+routeId).collection('seats').doc('booked')
-    console.log("🚀 ~ Routes ~ updateSeats ~ routeRef:", routeRef)
-  
+  static async updateSeats(routeId, selectedSeats, user, availableSeats, bookedSeats) {
+    const routeRef = await firestore.collection('routes').doc('routeId'+routeId).collection('seats').doc('booked')
+
     try {
       // Obtén el documento actual
       const doc = await routeRef.get()
@@ -53,24 +52,15 @@ class Routes extends IRoutes {
         const data = doc.data()
   
         // Agrega el usuario a los asientos seleccionados
-        const updatedSeats = {}
         selectedSeats.forEach(seat => {
-          updatedSeats[seat] = [userId, data[seat][1], data[seat][2]] // Reutiliza el precio y disponibilidad actuales
-        });
-  
-        // Actualiza los asientos en el documento
-        for (const [seat, details] of Object.entries(updatedSeats)) {
-          data[seat] = details
-        }
-  
-        // Actualiza los campos available y booked
+          data[seat] = [user, 300]
+        })
         data.available = availableSeats
         data.booked = bookedSeats
+        console.log("🚀 ~ Routes ~ updateSeats ~ data:", data)
   
         // Guarda los cambios
         await routeRef.set(data, { merge: true })
-  
-        console.log('Asientos actualizados exitosamente.')
       } else {
         console.log('No se encontró el documento.')
       }

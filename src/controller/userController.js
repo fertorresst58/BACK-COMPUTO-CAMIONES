@@ -61,5 +61,26 @@ const registerUser = async (req, res) => {
     })
   }
 }
+  
+const updateUser = async (req, res) => {
+  try {
+    const { id, nombre, apellidos, cumple, telefono, email, img } = req.body
+    const success = await User.updateUser(id, nombre, apellidos, cumple, telefono, email, img)
+    console.log("🚀 ~ updateUser ~ success:", success)
+    
+    if (success) {
+      res.status(200).json({
+        message: 'USUARIO ACTUALIZADO SATISFACTORIAMENTE',
+        success: true,
+      })
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: 'ERROR EN EL SERVIDOR',
+      success: false,
+      error
+    })
+  }
+}
 
-module.exports = { registerUser, loginUser }
+module.exports = { registerUser, updateUser, loginUser }

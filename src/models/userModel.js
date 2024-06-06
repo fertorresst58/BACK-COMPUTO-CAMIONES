@@ -32,7 +32,7 @@ class User extends IUser {
 					img
 			})
 
-			return new User(id, nombre, apellidos, telefono, cumple, email, password, img)
+			return new User(id, nombre, apellidos, cumple, telefono, email, password, img)
 		} 
 		catch (err) {
 			console.log('ERROR =>', err)
@@ -55,8 +55,8 @@ class User extends IUser {
 					userData.id,
 					userData.nombre, 
 					userData.apellidos,
-					userData.cumple,
 					userData.telefono,
+					userData.cumple,
 					userData.email,
 					userData.password,
 					userData.img
@@ -67,6 +67,19 @@ class User extends IUser {
 		catch(err) {
 			console.log('ERROR => ', err)
 			throw new Error('ERROR AL ENCONTRAR AL USUARIO')
+		}
+	}
+
+	static async updateUser(id, nombre, apellidos, cumple, telefono, email, img) {
+		try {
+			const user = firestore.collection('users').doc(email)
+			await user.update({ id, nombre, apellidos, cumple, telefono, email, img })
+
+			return true
+		} 
+		catch (err) {
+			console.log('ERROR =>', err)
+			throw new Error('ERROR AL ACTUALIZAR EL USUARIO')
 		}
 	}
 }

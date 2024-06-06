@@ -3,22 +3,24 @@ const IReservation = require('../interfaces/IReservation')
 const firestore = admin.firestore()
 
 class Reservation extends IReservation {
-	constructor(user, token, tipo, origen, destino, pasajeros, asientos, costo, routeId) {
+	constructor(user, token, tipo, origen, destino, fechaSalida, pasajeros, asientos, costo, routeId) {
 		super()
 		this.user = user
     this.token = token
     this.tipo = tipo
     this.origen = origen
     this.destino = destino
+		this.fechaSalida = fechaSalida
     this.pasajeros = pasajeros
     this.asientos = asientos
     this.costo = costo
     this.routeId = routeId
 	}
 
-	static async createReservation(user, token, tipo, origen, destino, pasajeros, asientos, costo, routeId) {
+	static async createReservation(user, token, tipo, origen, destino, fechaSalida, pasajeros, asientos, costo, routeId) {
 		try {
-			const reservation = firestore.collection('reservations').doc(user)
+      const timestamp = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14)
+			const reservation = firestore.collection('reservations').doc(user).collection('routeId'+routeId).doc(timestamp)
 
 			await reservation.set({
         user,
@@ -26,13 +28,14 @@ class Reservation extends IReservation {
         tipo,
         origen,
         destino,
+				fechaSalida,
         pasajeros,
         asientos,
         costo,
         routeId
 			})
 
-			return new Reservation(user, token, tipo, origen, destino, pasajeros, asientos, costo, routeId)
+			return new Reservation(user, token, tipo, origen, destino, fechaSalida, pasajeros, asientos, costo, routeId)
 		} 
 		catch (err) {
 			console.log('ERROR =>', err)
@@ -40,27 +43,26 @@ class Reservation extends IReservation {
 		}
 	}
 
-	static async findUser (email) {
+	static async findTickets (id) {
 		try {
-			const user = firestore.collection('users').doc(email)
-			const userDoc = await user.get()
+			const docRef = firestore.collection('reservations').doc(id)
+			const subcollections = await docRef.listCollections()
+			let results = []
 
-			if (userDoc.exists) {
-				const userData = userDoc.data()
-				return new User (
-					userData.id,
-					userData.nombre, 
-					userData.apellidos,
-					userData.cumple,
-					userData.telefono,
-					userData.email,
-					userData.password,
-					userData.img
-				)
+			for (const subcollection of subcollections) {
+				const subcollectionId = subcollection.id
+				const subdocuments = await subcollection.get()
+				subdocuments.forEach(doc => {
+					results.push({
+						ruta: subcollectionId,
+						validation: doc.id,
+						data: doc.data()
+					})
+				})
 			}
-			return null
-		} 
-		catch(err) {
+
+			return results
+		} catch(err) {
 			console.log('ERROR => ', err)
 			throw new Error('ERROR AL ENCONTRAR AL USUARIO')
 		}

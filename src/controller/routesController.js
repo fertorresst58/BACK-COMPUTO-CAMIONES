@@ -19,7 +19,7 @@ const routes = async (req, res) => {
       if (filters.date === date) {
         if (filters.origin === item.origin) {
           if (filters.destination === item.destination) {
-            if (filters.seats < item.seats.available) {
+            if (filters.seats <= item.seats.available) {
               routesFiltered.push(item)
             }
           }
@@ -35,7 +35,7 @@ const routes = async (req, res) => {
       })
     } else {
       res.status(400).json({
-        message: 'NO HAY RUTAS DISPONIBLES PARA LA FECHA Y ORIGEN INGRESADOS',
+        message: 'NO HAY RUTAS DISPONIBLES PARA LA FECHA Y/O ORIGEN/DESTINO INGRESADOS',
         success: false
       })
     }
@@ -57,8 +57,8 @@ const formatTimestampToDate = (timestamp) => {
 
 const updateRoute = async (req, res) => {
   try {
-    const { routeId, selectedSeats, userId, availableSeats, bookedSeats } = req.body
-    await Routes.updateSeats(routeId, selectedSeats, userId, availableSeats, bookedSeats)
+    const { routeId, selectedSeats, user, availableSeats, bookedSeats } = req.body
+    await Routes.updateSeats(routeId, selectedSeats, user, availableSeats, bookedSeats)
     
     res.status(201).json({
       message: 'RUTA ACTUALIZADA CORRECTAMENTE',
