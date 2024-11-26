@@ -42,6 +42,55 @@ class Routes extends IRoutes {
     }
   }
 
+  static async createRoute({
+    id,
+    arrivalTime,
+    departureTime,
+    destination,
+    origin,
+    price,
+    stops
+  }) {
+    try {
+      if (!id || !arrivalTime || !departureTime || !destination || !origin || price === undefined || !stops) {
+        throw new Error('Faltan parámetros requeridos para crear la ruta');
+      }
+
+      // Referencia para 'seats/booked'
+      const seatsRef = firestore
+        .collection('routes')
+        .doc(`routeId${id}`)
+        .collection('seats')
+        .doc('booked');
+
+      // Datos iniciales para los asientos
+      const seatsData = { available: 16, booked: 0 }; // Valores iniciales
+
+      // Crear la referencia de asientos
+      await seatsRef.set(seatsData);
+
+      // Configurar la ruta con referencia
+      const routeData = {
+        id,
+        arrivalTime: admin.firestore.Timestamp.fromDate(new Date(arrivalTime)),
+        departureTime: admin.firestore.Timestamp.fromDate(new Date(departureTime)),
+        destination,
+        origin,
+        price,
+        seats: seatsRef, // Guardar la referencia
+        stops
+      };
+
+      // Guardar la ruta
+      const routeRef = firestore.collection('routes').doc(`routeId${id}`);
+      await routeRef.set(routeData);
+
+      return { success: true, message: 'Ruta creada correctamente', data: routeData };
+    } catch (error) {
+      throw new Error(`Error creando la ruta: ${error.message}`);
+    }
+  }
+
   static async updateSeats(routeId, selectedSeats, user, availableSeats, bookedSeats) {
     const routeRef = await firestore.collection('routes').doc('routeId'+routeId).collection('seats').doc('booked')
 
@@ -66,6 +115,35 @@ class Routes extends IRoutes {
       }
     } catch (error) {
       console.error('Error actualizando los asientos:', error);
+    }
+  }
+
+  static async updateModifySeats(routeId, availableSeats, bookedSeats) {
+    try {
+      console.log("Entro")
+      const bookedSeatsRef = firestore
+        .collection('routes')
+        .doc(`routeId${routeId}`)
+        .collection('seats')
+        .doc('booked')
+
+      const bookedSeatsDoc = await bookedSeatsRef.get();
+      if (!bookedSeatsDoc.exists) {
+        throw new Error('El documento de asientos reservados no existe');
+      }
+
+      // Actualizar los datos de asientos disponibles y reservados
+      await bookedSeatsRef.set(
+        {
+          available: availableSeats,
+          booked: bookedSeats
+        },
+        { merge: true }
+      );
+
+      return { routeId, availableSeats, bookedSeats };
+    } catch (error) {
+      throw new Error(`Error actualizando los asientos: ${error.message}`);
     }
   }
 }
