@@ -11,6 +11,7 @@ const routes = async (req, res) => {
     }
   
     const routes = await Routes.getAllRoutes()
+    console.log ("Routes: ", routes)
 
     const routesFiltered = []
     routes.forEach(item => {
@@ -55,6 +56,38 @@ const formatTimestampToDate = (timestamp) => {
   return `${year}-${month}-${day}`
 }
 
+const createRoute = async (req, res) => {
+  try {
+    const { id, arrivalTime, departureTime, destination, origin, price, stops } = req.body;
+
+    if (!id || !arrivalTime || !departureTime || !destination || !origin || price === undefined || !stops) {
+      return res.status(400).json({
+        message: 'Faltan parámetros requeridos para crear la ruta',
+        success: false
+      })
+    }
+
+    const result = await Routes.createRoute({
+      id,
+      arrivalTime,
+      departureTime,
+      destination,
+      origin,
+      price,
+      stops
+    });
+
+    res.status(201).json(result);
+  } catch (error) {
+    console.error('Error creando la ruta:', error);
+    res.status(500).json({
+      message: 'Error en el servidor al crear la ruta',
+      success: false,
+      error: error.message
+    })
+  }
+}
+
 const updateRoute = async (req, res) => {
   try {
     const { routeId, selectedSeats, user, availableSeats, bookedSeats } = req.body
@@ -73,4 +106,35 @@ const updateRoute = async (req, res) => {
   }
 }
 
-module.exports = { routes, updateRoute }
+const modifyRouteSeats = async (req, res) => {
+  try {
+    const { routeId, available, booked } = req.body;
+
+    if (!routeId || available === undefined || booked === undefined) {
+      return res.status(400).json({
+        message: 'Faltan parámetros requeridos',
+        success: false
+      })
+    }
+
+    // Llamar al modelo para actualizar los asientos
+    const updatedData = await Routes.updateModifySeats(routeId, available, booked)
+
+    console.log("update:", updatedData)
+
+    res.status(200).json({
+      message: 'Asientos de la ruta actualizados correctamente',
+      success: true,
+      data: updatedData
+    })
+  } catch (error) {
+    console.error('Error modificando los asientos:', error)
+    res.status(500).json({
+      message: 'Error en el servidor',
+      success: false,
+      error: error.message
+    })
+  }
+}
+
+module.exports = { routes, updateRoute, modifyRouteSeats, createRoute }

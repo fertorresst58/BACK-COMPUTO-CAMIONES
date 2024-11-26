@@ -33,6 +33,8 @@ const loginUser = async (req, res) => {
       message: 'ERROR EN EL SERVIDOR',
       success: false
     })
+    console.log("email", email)
+    console.log (error);
   }
 }
 
