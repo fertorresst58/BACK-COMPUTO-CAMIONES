@@ -58,9 +58,9 @@ const formatTimestampToDate = (timestamp) => {
 
 const createRoute = async (req, res) => {
   try {
-    const { id, arrivalTime, departureTime, destination, origin, price, stops } = req.body;
+    const { routeId, arrivalTime, departureTime, destination, origin, price, stops } = req.body;
 
-    if (!id || !arrivalTime || !departureTime || !destination || !origin || price === undefined || !stops) {
+    if (!routeId || !arrivalTime || !departureTime || !destination || !origin || price === undefined || !stops) {
       return res.status(400).json({
         message: 'Faltan parámetros requeridos para crear la ruta',
         success: false
@@ -68,7 +68,7 @@ const createRoute = async (req, res) => {
     }
 
     const result = await Routes.createRoute({
-      id,
+      routeId,
       arrivalTime,
       departureTime,
       destination,
@@ -137,4 +137,4 @@ const modifyRouteSeats = async (req, res) => {
   }
 }
 
-module.exports = { routes, updateRoute, modifyRouteSeats, createRoute }
+module.exports = routes, updateRoute, modifyRouteSeats, createRoute 

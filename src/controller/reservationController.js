@@ -26,6 +26,7 @@ const getReservations = async (req, res) => {
     console.log("🚀 ~ getReservations ~ id:", id)
   
     const tickets = await Reservation.findTickets(id)
+    console.log("🚀 ~ getReservations ~ data:", tickets)
   
     res.status(200).json({
       message: 'TICKETS ENCONTRADOS EXITOSAMENTE',
