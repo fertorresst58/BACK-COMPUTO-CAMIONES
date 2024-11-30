@@ -3,7 +3,7 @@ const router = express.Router()
 const { registerUser, updateUser, loginUser } = require('./../controller/userController')
 const { routes, createRoute, updateRoute, modifyRouteSeats } = require('./../controller/routesController')
 const { checkout, success, cancel } = require('./../controller/stripeController')
-const { registerReservation, getReservations } = require('./../controller/reservationController')
+const { registerReservation, getReservations, deleteTicket } = require('./../controller/reservationController')
 
 const authenticateToken = require('./../auth/authMiddleware')
 
@@ -22,5 +22,6 @@ router.get('/cancel', cancel)
 
 router.post('/update-reservation', registerReservation)
 router.get('/get-reservations/:id', authenticateToken, getReservations)
+router.delete('/delete-ticket/:id', authenticateToken, deleteTicket)
 
 module.exports = router

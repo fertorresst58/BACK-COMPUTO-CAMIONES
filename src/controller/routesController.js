@@ -137,4 +137,9 @@ const modifyRouteSeats = async (req, res) => {
   }
 }
 
-module.exports = routes, updateRoute, modifyRouteSeats, createRoute 
+module.exports = {
+  routes,
+  updateRoute,
+  modifyRouteSeats,
+  createRoute
+}
