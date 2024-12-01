@@ -43,7 +43,7 @@ class Routes extends IRoutes {
   }
 
   static async createRoute({
-    id,
+    routeId,
     arrivalTime,
     departureTime,
     destination,
@@ -51,6 +51,7 @@ class Routes extends IRoutes {
     price,
     stops
   }) {
+    const id = routeId
     try {
       if (!id || !arrivalTime || !departureTime || !destination || !origin || price === undefined || !stops) {
         throw new Error('Faltan parámetros requeridos para crear la ruta');
@@ -115,6 +116,22 @@ class Routes extends IRoutes {
       }
     } catch (error) {
       console.error('Error actualizando los asientos:', error);
+    }
+  }
+
+  static async deleteRoute(routeId) {
+    console.log("🚀 ~ Routes ~ deleteRoute ~ routeId:", routeId)
+    try {
+      const routeRef = firestore.collection('routes').doc(`routeId${routeId}`);
+      const seatsRef = routeRef.collection('seats').doc('booked');
+
+      // Eliminar la ruta y los asientos
+      await routeRef.delete();
+      await seatsRef.delete();
+
+      return { routeId };
+    } catch (error) {
+      throw new Error(`Error eliminando la ruta: ${error.message}`);
     }
   }
 
