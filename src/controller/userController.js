@@ -28,6 +28,9 @@ const loginUser = async (req, res) => {
       token,
       user: userDoc
     })
+
+    console.log("email", email);
+
   } catch (error) {
     res.status(500).json({
       message: 'ERROR EN EL SERVIDOR',

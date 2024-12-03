@@ -22,6 +22,7 @@ const {
 const {
   registerReservation,
   getReservations,
+  deleteTicket
 } = require("./../controller/reservationController");
 
 const authenticateToken = require("./../auth/authMiddleware");
@@ -43,7 +44,8 @@ router.post("/create-checkout-session", checkout);
 router.get("/success", success);
 router.get("/cancel", cancel);
 
-router.post("/update-reservation", registerReservation);
-router.get("/get-reservations/:id", authenticateToken, getReservations);
+router.post('/update-reservation', registerReservation)
+router.get('/get-reservations/:id', authenticateToken, getReservations)
+router.delete('/delete-ticket/:id', authenticateToken, deleteTicket)
 
 module.exports = router;
