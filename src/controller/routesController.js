@@ -122,7 +122,41 @@ const createRoute = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
+
+const updateAllRoute = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { arrivalTime, departureTime, price, stops } = req.body;
+
+    if (!id || !arrivalTime || !departureTime || price === undefined || !stops) {
+      return res.status(400).json({
+        message: "Faltan parámetros requeridos para actualizar la ruta",
+        success: false,
+      });
+    }
+
+    const result = await Routes.updateRoute(id, {
+      arrivalTime,
+      departureTime,
+      price,
+      stops,
+    });
+
+    res.status(200).json({
+      message: "RUTA ACTUALIZADA CORRECTAMENTE",
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error actualizando la ruta:", error);
+    res.status(500).json({
+      message: "Error en el servidor al actualizar la ruta",
+      success: false,
+      error: error.message,
+    });
+  }
+}
 
 const deleteRoute = async (req, res) => {
   console.log("🚀 ~ deleteRoute ~ req:", req)
@@ -207,6 +241,7 @@ module.exports = {
   getAllRoutes,
   routes,
   deleteRoute,
+  updateAllRoute,
   updateRoute,
   modifyRouteSeats,
   createRoute,
