@@ -27,12 +27,15 @@ const authenticateToken = require("./../auth/authMiddleware");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/logout", (req, res) => {
+  res.send("logout");
+});
 router.put("/updateUser", authenticateToken, updateUser);
 
-router.get("/all-routes/:id", getAllRoutes);
+router.get("/all-routes", authenticateToken, getAllRoutes);
 router.get("/routes", routes);
-router.post("/create-route", createRoute);
-router.delete("/delete-route/:id", deleteRoute);
+router.post("/create-route", authenticateToken, createRoute);
+router.delete("/delete-route/:id", authenticateToken, deleteRoute);
 router.post("/update-route", updateRoute);
 router.post("/modify-route-seats", modifyRouteSeats);
 
