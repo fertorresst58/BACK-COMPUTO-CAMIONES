@@ -43,7 +43,7 @@ class Routes extends IRoutes {
   }
 
   static async createRoute({
-    id,
+    routeId,
     arrivalTime,
     departureTime,
     destination,
@@ -52,14 +52,14 @@ class Routes extends IRoutes {
     stops
   }) {
     try {
-      if (!id || !arrivalTime || !departureTime || !destination || !origin || price === undefined || !stops) {
+      if (!routeId || !arrivalTime || !departureTime || !destination || !origin || price === undefined || !stops) {
         throw new Error('Faltan parámetros requeridos para crear la ruta');
       }
 
       // Referencia para 'seats/booked'
       const seatsRef = firestore
         .collection('routes')
-        .doc(`routeId${id}`)
+        .doc(`routeId${routeId}`)
         .collection('seats')
         .doc('booked');
 
@@ -71,7 +71,7 @@ class Routes extends IRoutes {
 
       // Configurar la ruta con referencia
       const routeData = {
-        id,
+        routeId,
         arrivalTime: admin.firestore.Timestamp.fromDate(new Date(arrivalTime)),
         departureTime: admin.firestore.Timestamp.fromDate(new Date(departureTime)),
         destination,
@@ -82,7 +82,7 @@ class Routes extends IRoutes {
       };
 
       // Guardar la ruta
-      const routeRef = firestore.collection('routes').doc(`routeId${id}`);
+      const routeRef = firestore.collection('routes').doc(`routeId${routeId}`);
       await routeRef.set(routeData);
 
       return { success: true, message: 'Ruta creada correctamente', data: routeData };
@@ -115,6 +115,40 @@ class Routes extends IRoutes {
       }
     } catch (error) {
       console.error('Error actualizando los asientos:', error);
+    }
+  }
+
+  static async updateRoute(id, { arrivalTime, departureTime, price, stops }) {
+    try {
+      const routeRef = firestore.collection('routes').doc(`routeId${id}`);
+
+      const routeData = {
+        arrivalTime: admin.firestore.Timestamp.fromDate(new Date(arrivalTime)),
+        departureTime: admin.firestore.Timestamp.fromDate(new Date(departureTime)),
+        price,
+        stops,
+      };
+
+      await routeRef.update(routeData);
+
+      return { id, ...routeData };
+    } catch (error) {
+      throw new Error(`Error actualizando la ruta: ${error.message}`);
+    }
+  }
+
+  static async deleteRoute(routeId) {
+    try {
+      const routeRef = firestore.collection('routes').doc(`routeId${routeId}`);
+      const seatsRef = routeRef.collection('seats').doc('booked');
+
+      // Eliminar la ruta y los asientos
+      await routeRef.delete();
+      await seatsRef.delete();
+
+      return { routeId };
+    } catch (error) {
+      throw new Error(`Error eliminando la ruta: ${error.message}`);
     }
   }
 
