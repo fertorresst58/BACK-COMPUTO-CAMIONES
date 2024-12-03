@@ -43,4 +43,21 @@ const getReservations = async (req, res) => {
   }
 }
 
-module.exports = { registerReservation, getReservations }
+const deleteTicket = async (req, res) => {
+  const ticketId = req.params.id;
+
+  try {
+      const success = await Reservation.deleteTicketById(ticketId);
+
+      if (success) {
+          return res.status(200).json({ success: true, message: 'Ticket eliminado' });
+      } else {
+          return res.status(400).json({ success: false, message: 'No se pudo eliminar el ticket' });
+      }
+  } catch (error) {
+      console.error('Error al eliminar el ticket:', error.message);
+      return res.status(500).json({ success: false, message: 'Error en el servidor', error: error.message });
+  }
+};
+
+module.exports = { registerReservation, getReservations, deleteTicket }
