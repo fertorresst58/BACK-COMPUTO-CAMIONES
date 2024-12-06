@@ -37,7 +37,7 @@ class Routes extends IRoutes {
   
       return routes;
     } catch (err) {
-      console.log('ERROR =>', err)
+      console.error('ERROR =>', err)
       throw new Error('ERROR AL OBTENER LAS RUTAS')
     }
   }
@@ -106,12 +106,11 @@ class Routes extends IRoutes {
         })
         data.available = availableSeats
         data.booked = bookedSeats
-        console.log("🚀 ~ Routes ~ updateSeats ~ data:", data)
   
         // Guarda los cambios
         await routeRef.set(data, { merge: true })
       } else {
-        console.log('No se encontró el documento.')
+        console.error('No se encontró el documento.')
       }
     } catch (error) {
       console.error('Error actualizando los asientos:', error);
@@ -154,7 +153,6 @@ class Routes extends IRoutes {
 
   static async updateModifySeats(routeId, availableSeats, bookedSeats) {
     try {
-      console.log("Entro")
       const bookedSeatsRef = firestore
         .collection('routes')
         .doc(`routeId${routeId}`)

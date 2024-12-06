@@ -28,8 +28,6 @@ const routes = async (req, res) => {
     };
 
     const routes = await Routes.getAllRoutes();
-    console.log("Routes: ", routes);
-
     const routesFiltered = [];
     routes.forEach((item) => {
       const date = formatTimestampToDate(item.departureTime);
@@ -159,7 +157,6 @@ const updateAllRoute = async (req, res) => {
 }
 
 const deleteRoute = async (req, res) => {
-  console.log("🚀 ~ deleteRoute ~ req:", req)
   try {
     const { id } = req.params;
     await Routes.deleteRoute(id);
@@ -219,8 +216,6 @@ const modifyRouteSeats = async (req, res) => {
       available,
       booked
     );
-
-    console.log("update:", updatedData);
 
     res.status(200).json({
       message: "Asientos de la ruta actualizados correctamente",

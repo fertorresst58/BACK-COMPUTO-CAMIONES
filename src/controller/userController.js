@@ -29,15 +29,12 @@ const loginUser = async (req, res) => {
       user: userDoc
     })
 
-    console.log("email", email);
-
   } catch (error) {
     res.status(500).json({
       message: 'ERROR EN EL SERVIDOR',
       success: false
     })
-    console.log("email", email)
-    console.log (error);
+    console.error(error);
   }
 }
 
@@ -71,7 +68,6 @@ const updateUser = async (req, res) => {
   try {
     const { id, nombre, apellidos, cumple, telefono, email, img } = req.body
     const success = await User.updateUser(id, nombre, apellidos, cumple, telefono, email, img)
-    console.log("🚀 ~ updateUser ~ success:", success)
     
     if (success) {
       res.status(200).json({

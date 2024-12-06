@@ -38,7 +38,7 @@ class Reservation extends IReservation {
 			return new Reservation(user, token, tipo, origen, destino, fechaSalida, pasajeros, asientos, costo, routeId)
 		} 
 		catch (err) {
-			console.log('ERROR =>', err)
+			console.error('ERROR =>', err)
 			throw new Error('ERROR AL CREAR LA RESERVACIÓN')
 		}
 	}
@@ -63,7 +63,7 @@ class Reservation extends IReservation {
 
 			return results
 		} catch(err) {
-			console.log('ERROR => ', err)
+			console.error('ERROR => ', err)
 			throw new Error('ERROR AL ENCONTRAR AL USUARIO')
 		}
 	}
@@ -140,8 +140,6 @@ class Reservation extends IReservation {
 						booked: bookedCount, // Actualiza el número total de ocupados
 						available, // Actualiza los asientos disponibles
 					});
-	
-					console.log('Asientos actualizados correctamente');
 				} else {
 					console.error('Documento booked no encontrado');
 					throw new Error('Documento booked no encontrado en la ruta especificada');
